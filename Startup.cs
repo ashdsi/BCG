@@ -5,8 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
-
+using System;
 
 namespace BCG_Orgbuilder
 {
@@ -15,11 +14,10 @@ namespace BCG_Orgbuilder
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            
+
         }
 
         public IConfiguration Configuration { get; }
-        
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -27,7 +25,9 @@ namespace BCG_Orgbuilder
             
             services.AddControllers();
             services.AddScoped<IApiRepo, PostgresqlApiRepo>();
-            services.AddDbContext<ApiContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("PostgreSqlConnection")));
+            
+            string connstring = Environment.GetEnvironmentVariable("DB_CONNECTIONSTRING");    //from docker environment variable
+            services.AddDbContext<ApiContext>(opt => opt.UseNpgsql(connstring));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
